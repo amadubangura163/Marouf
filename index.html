@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#14213d">
+  <meta name="description" content="A responsive weather dashboard and personal task planner.">
+  <title>Daylight — Weather & Tasks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Main navigation">
+      <a class="brand" href="#" aria-label="Daylight home">
+        <span class="brand-mark">✦</span><span>daylight<span class="brand-dot">.</span></span>
+      </a>
+      <div class="side-label">WORKSPACE</div>
+      <nav class="nav-links">
+        <button class="nav-link active" data-view="dashboard"><span>◫</span> Overview</button>
+        <button class="nav-link" data-view="tasks"><span>☑</span> My tasks <span class="nav-count" id="nav-pending">0</span></button>
+        <button class="nav-link" data-view="planner"><span>◷</span> Daily planner</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="mini-tip">
+          <div class="tip-icon">✧</div>
+          <strong>A little progress adds up.</strong>
+          <p>Plan your day, then take it one task at a time.</p>
+        </div>
+        <button class="nav-link" id="theme-toggle" aria-label="Switch color theme"><span id="theme-icon">☾</span> <span id="theme-label">Dark mode</span></button>
+        <div class="profile-row"><div class="avatar">D</div><div><strong>Your day</strong><small>Personal workspace</small></div></div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div class="mobile-brand"><span class="brand-mark">✦</span> daylight<span class="brand-dot">.</span></div>
+        <div class="greeting"><span class="eyebrow" id="today-label">YOUR DAY, AT A GLANCE</span><h1 id="greeting-title">Good morning.</h1></div>
+        <div class="top-actions">
+          <form id="city-form" class="city-search" role="search">
+            <span aria-hidden="true">⌕</span><label class="sr-only" for="city-input">Search city weather</label>
+            <input id="city-input" type="search" placeholder="Search a city..." autocomplete="off">
+            <button type="submit" aria-label="Search city">↵</button>
+          </form>
+          <button class="icon-button" id="location-button" title="Use my location" aria-label="Use my location">◎</button>
+          <button class="icon-button refresh-button" id="refresh-weather" title="Refresh weather" aria-label="Refresh weather">↻</button>
+        </div>
+      </header>
+
+      <div id="app-message" class="message" role="status" aria-live="polite" hidden></div>
+
+      <section class="view-section active-view" id="view-dashboard">
+        <div class="dashboard-grid">
+          <section class="weather-card panel" id="weather-card" aria-labelledby="weather-heading">
+            <div class="weather-top">
+              <div><span class="eyebrow light-eyebrow">CURRENT WEATHER</span><h2 id="weather-heading">Weather near you</h2><p id="weather-location" class="weather-location">Choose a city to get started</p></div>
+              <div class="weather-badge" id="weather-icon" aria-hidden="true">☀️</div>
+            </div>
+            <div class="temperature-row">
+              <div class="temperature" id="current-temp">--<span>°C</span></div>
+              <div class="weather-condition"><strong id="current-condition">Waiting for weather</strong><span id="today-high-low">High --° · Low --°</span></div>
+            </div>
+            <div class="weather-stats">
+              <div class="weather-stat"><span class="stat-symbol">♨</span><div><small>Feels like</small><strong id="feels-like">--°</strong></div></div>
+              <div class="weather-stat"><span class="stat-symbol">◌</span><div><small>Humidity</small><strong id="humidity">--%</strong></div></div>
+              <div class="weather-stat"><span class="stat-symbol">➤</span><div><small>Wind</small><strong id="wind-speed">-- km/h</strong></div></div>
+              <div class="weather-stat"><span class="stat-symbol">☂</span><div><small>Rain chance</small><strong id="rain-chance">--%</strong></div></div>
+            </div>
+            <div class="weather-footer"><span id="sun-times">Sunrise -- · Sunset --</span><span id="weather-updated">Not updated yet</span></div>
+          </section>
+
+          <section class="panel progress-panel">
+            <div class="section-heading"><div><span class="eyebrow">YOUR MOMENTUM</span><h2>Task progress</h2></div><span class="heading-icon">↗</span></div>
+            <div class="progress-ring-wrap"><div class="progress-ring" id="progress-ring"><div class="ring-inner"><strong id="completion-rate">0%</strong><small>completed</small></div></div></div>
+            <div class="progress-legend"><div><span class="legend-dot done-dot"></span>Completed <strong id="stat-completed">0</strong></div><div><span class="legend-dot pending-dot"></span>Remaining <strong id="stat-pending">0</strong></div></div>
+            <p class="progress-message" id="progress-message">A fresh start. Add your first task.</p>
+          </section>
+        </div>
+
+        <div class="section-heading forecast-heading"><div><span class="eyebrow">PLAN AHEAD</span><h2>Coming weather</h2></div><div class="unit-toggle" aria-label="Temperature unit"><button class="unit-button active" data-unit="celsius">°C</button><button class="unit-button" data-unit="fahrenheit">°F</button></div></div>
+        <section class="forecast-grid" id="forecast-grid" aria-label="Daily weather forecast"><div class="empty-state">Weather forecast will appear here when weather loads.</div></section>
+        <div class="section-heading hourly-heading"><div><span class="eyebrow">THROUGH THE DAY</span><h2>Hourly forecast</h2></div></div>
+        <section class="hourly-grid panel" id="hourly-weather" aria-label="Hourly weather forecast"><div class="empty-state">Hourly weather will appear here when weather loads.</div></section>
+
+        <div class="content-columns">
+          <section class="panel task-panel">
+            <div class="section-heading"><div><span class="eyebrow">MAKE TODAY COUNT</span><h2>Today's tasks</h2></div><button class="text-button" data-view="tasks">View all <span>→</span></button></div>
+            <form id="quick-task-form" class="quick-add"><label class="sr-only" for="quick-task-title">New task title</label><input id="quick-task-title" maxlength="160" placeholder="What do you need to do?" required><button type="submit" class="primary-button">＋ Add task</button></form>
+            <div id="today-task-list" class="task-list"><div class="empty-state">No tasks due today. Add one above or create a task with today's date.</div></div>
+          </section>
+          <section class="panel upcoming-panel">
+            <div class="section-heading"><div><span class="eyebrow">WHAT'S NEXT</span><h2>Upcoming</h2></div><span class="heading-icon">↗</span></div>
+            <div id="upcoming-list" class="upcoming-list"><div class="empty-state">Your upcoming tasks will appear here.</div></div>
+            <div class="sun-note"><span>☀</span><div><strong>Make room for fresh air</strong><p id="weather-tip">Check the forecast to plan an outdoor break.</p></div></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view-section" id="view-tasks">
+        <div class="page-title-row"><div><span class="eyebrow">YOUR PERSONAL SPACE</span><h2>My tasks</h2><p>Capture it, plan it, and move forward.</p></div><button class="primary-button" id="open-task-modal">＋ New task</button></div>
+        <section class="panel all-tasks-panel">
+          <div class="task-toolbar">
+            <div class="filter-tabs" id="task-filters">
+              <button class="filter-tab active" data-filter="all">All</button><button class="filter-tab" data-filter="today">Today</button><button class="filter-tab" data-filter="upcoming">Upcoming</button><button class="filter-tab" data-filter="completed">Completed</button><button class="filter-tab" data-filter="overdue">Overdue</button>
+            </div>
+            <div class="filter-controls"><label class="sr-only" for="category-filter">Filter by category</label><select id="category-filter"><option value="all">All categories</option><option>Work</option><option>Study</option><option>Personal</option><option>Health</option><option>Other</option></select><label class="sr-only" for="priority-filter">Filter by priority</label><select id="priority-filter"><option value="all">All priorities</option><option value="High">High priority</option><option value="Medium">Medium priority</option><option value="Low">Low priority</option></select><label class="sr-only" for="sort-tasks">Sort tasks</label><select id="sort-tasks"><option value="due">Due date</option><option value="priority">Priority</option><option value="created">Recently created</option></select></div>
+          </div>
+          <div class="task-search-row"><label class="sr-only" for="task-search">Search tasks</label><span>⌕</span><input id="task-search" type="search" placeholder="Search tasks by title or description..."><span id="task-result-count" class="result-count">0 tasks</span></div>
+          <div id="all-task-list" class="task-list full-task-list"></div>
+          <div class="list-footer"><span id="list-summary">Keep going, one step at a time.</span><button class="text-button danger-text" id="clear-completed">Clear completed</button></div>
+        </section>
+      </section>
+
+      <section class="view-section" id="view-planner">
+        <div class="page-title-row"><div><span class="eyebrow">A LITTLE STRUCTURE, A LOT OF POSSIBILITY</span><h2>Daily planner</h2><p id="planner-date">Your plan for today.</p></div><button class="primary-button" id="planner-add-task">＋ Plan a task</button></div>
+        <div class="planner-grid">
+          <section class="panel planner-weather"><span class="eyebrow">WEATHER CHECK</span><div class="planner-weather-main"><span id="planner-weather-icon">☀️</span><div><strong id="planner-temp">--°</strong><span id="planner-condition">Waiting for weather</span></div></div><p id="planner-weather-summary">Search for a city or allow location access to see local weather.</p><div id="planner-weather-warning" class="weather-warning" hidden></div></section>
+          <section class="panel planner-summary"><span class="eyebrow">TODAY AT A GLANCE</span><div class="planner-stats"><div><strong id="planner-total">0</strong><span>Due today</span></div><div><strong id="planner-done">0</strong><span>Completed</span></div><div><strong id="planner-left">0</strong><span>To go</span></div></div><div class="thin-progress"><span id="planner-progress"></span></div></section>
+        </div>
+        <section class="panel planner-tasks"><div class="section-heading"><div><span class="eyebrow">YOUR SCHEDULE</span><h2>Today's plan</h2></div><span class="date-pill" id="planner-date-pill">Today</span></div><div id="planner-task-list" class="task-list"></div></section>
+      </section>
+
+      <footer class="app-footer"><span>✦ daylight.</span><span>Weather data by Open-Meteo · Your tasks stay in this browser</span></footer>
+    </main>
+  </div>
+
+  <dialog id="task-dialog" class="task-dialog">
+    <form id="task-form" method="dialog">
+      <div class="dialog-header"><div><span class="eyebrow">MAKE IT HAPPEN</span><h2 id="task-dialog-title">Create a task</h2></div><button type="button" class="icon-button" id="close-task-modal" aria-label="Close task form">×</button></div>
+      <input type="hidden" id="task-id">
+      <label for="task-title">Task title <span>*</span></label><input id="task-title" maxlength="160" required placeholder="e.g. Review lecture notes">
+      <label for="task-description">Description</label><textarea id="task-description" rows="3" maxlength="1000" placeholder="Add details if you need them..."></textarea>
+      <div class="form-row"><div><label for="task-date">Due date</label><input type="date" id="task-date"></div><div><label for="task-time">Due time</label><input type="time" id="task-time"></div></div>
+      <div class="form-row"><div><label for="task-priority">Priority</label><select id="task-priority"><option>Medium</option><option>High</option><option>Low</option></select></div><div><label for="task-category">Category</label><select id="task-category"><option>Personal</option><option>Work</option><option>Study</option><option>Health</option><option>Other</option></select></div></div>
+      <p class="form-error" id="task-form-error" role="alert" hidden></p>
+      <div class="dialog-actions"><button type="button" class="secondary-button" id="cancel-task">Cancel</button><button type="submit" class="primary-button" id="save-task">Save task</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="detail-dialog" class="task-dialog detail-dialog">
+    <div class="dialog-header"><div><span class="eyebrow">TASK DETAILS</span><h2 id="detail-title">Task</h2></div><button class="icon-button" id="close-detail" aria-label="Close task details">×</button></div>
+    <p id="detail-description" class="detail-description"></p><div id="detail-meta" class="detail-meta"></div>
+    <div class="dialog-actions"><button class="secondary-button" id="detail-edit">Edit task</button><button class="primary-button" id="detail-done">Mark complete</button></div>
+  </dialog>
+</body>
+</html>
